@@ -1,4 +1,4 @@
-package com.fatcatdog.todo.model;
+package com.fatcatdog.todo.entity;
 
 import java.util.Date;
 
