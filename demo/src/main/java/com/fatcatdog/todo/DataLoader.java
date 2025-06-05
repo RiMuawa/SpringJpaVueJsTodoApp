@@ -8,7 +8,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import com.fatcatdog.todo.model.Task;
+import com.fatcatdog.todo.entity.Task;
 import com.fatcatdog.todo.service.TaskService;
 
 //This class inputs 3 objects into the database upon booting up the application. 

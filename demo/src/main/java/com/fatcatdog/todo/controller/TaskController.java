@@ -1,6 +1,8 @@
 package com.fatcatdog.todo.controller;
 
 import java.util.Optional;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fatcatdog.todo.DemoApplication;
-import com.fatcatdog.todo.model.Task;
+import com.fatcatdog.todo.entity.Task;
 import com.fatcatdog.todo.service.TaskService;
+import com.fatcatdog.todo.dto.TaskDto;
+import com.fatcatdog.todo.mapper.TaskMapper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,19 +36,23 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping(path="/api") 
 public class TaskController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
+        private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
 
-	@Autowired
-	private TaskService taskService;
+        @Autowired
+        private TaskService taskService;
+
+        @Autowired
+        private TaskMapper taskMapper;
 
 	@ApiOperation(value = "Add a task")
     @CrossOrigin(origins = "*")
-	@PostMapping(path="/add", produces = "application/json; charset=UTF-8") 
-	public ResponseEntity<?> addNewTask (@RequestBody Task task) {
+        @PostMapping(path="/add", produces = "application/json; charset=UTF-8")
+        public ResponseEntity<?> addNewTask (@RequestBody TaskDto taskDto) {
 
 		try {
-			taskService.save(task);
-		    logger.info("TaskController - addNewTask: " + task);
+                        Task task = taskMapper.toEntity(taskDto);
+                        taskService.save(task);
+                    logger.info("TaskController - addNewTask: " + task);
 			return new ResponseEntity<>(HttpStatus.OK) ;
 		} catch (Exception e) {
 		    logger.error("TaskController - addNewTask: " + e);
@@ -54,12 +62,13 @@ public class TaskController {
 	
 	@ApiOperation(value = "Update a task")
     @CrossOrigin(origins = "*")
-	@PutMapping(path="/update",  produces = "application/json; charset=UTF-8") 
-	public ResponseEntity<?> updateTask (@RequestBody Task task) {
+        @PutMapping(path="/update",  produces = "application/json; charset=UTF-8")
+        public ResponseEntity<?> updateTask (@RequestBody TaskDto taskDto) {
 			        
 		try {
-			taskService.save(task);
-		    logger.info("TaskController - updateTask: " + task);
+                        Task task = taskMapper.toEntity(taskDto);
+                        taskService.save(task);
+                    logger.info("TaskController - updateTask: " + task);
 			return new ResponseEntity<>(HttpStatus.OK) ;
 		} catch (Exception e) {
 		    logger.error("TaskController - updateTask: " + e);			
@@ -70,11 +79,15 @@ public class TaskController {
 	@ApiOperation(value = "Get all tasks")
     @CrossOrigin(origins = "*")
 	@GetMapping(path = "/tasks",  produces = "application/json; charset=UTF-8") 
-	public ResponseEntity<?> getAllTasks() {
-		try {
-    		Iterable<Task> tempTasks = taskService.getAllTasks();
-		    logger.info("TaskController - getAllTasks: " + tempTasks);
-    		return new ResponseEntity<>(tempTasks, HttpStatus.OK); 
+        public ResponseEntity<?> getAllTasks() {
+                try {
+                Iterable<Task> tempTasks = taskService.getAllTasks();
+                List<TaskDto> dtos = new ArrayList<>();
+                for (Task t : tempTasks) {
+                    dtos.add(taskMapper.toDto(t));
+                }
+                    logger.info("TaskController - getAllTasks: " + dtos);
+                return new ResponseEntity<>(dtos, HttpStatus.OK);
 		} catch (Exception e) {
 			System.out.println(e);
 		    logger.error("TaskController - getAllTasks: " + e);
@@ -85,11 +98,12 @@ public class TaskController {
 	@ApiOperation(value = "Get a task by Task id(int)")
     @CrossOrigin(origins = "*")
 	@GetMapping(path = "/get/{id}",  produces = "application/json; charset=UTF-8") 
-	public ResponseEntity<?> getTaskById(@PathVariable(name = "id") int id) {
-		try {
-    		Optional<Task> tempTask = taskService.getTask((id));
-		    logger.info("TaskController - getTaskById: " + " id: " + id  + " task: " + tempTask);
-    		return new ResponseEntity<>(tempTask, HttpStatus.OK); 
+        public ResponseEntity<?> getTaskById(@PathVariable(name = "id") int id) {
+                try {
+                Optional<Task> tempTask = taskService.getTask((id));
+                Optional<TaskDto> dto = tempTask.map(taskMapper::toDto);
+                    logger.info("TaskController - getTaskById: " + " id: " + id  + " task: " + dto);
+                return new ResponseEntity<>(dto, HttpStatus.OK);
 		} catch (Exception e) {
 		    logger.error("TaskController - getTaskById: " + e);
     		return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
@@ -98,12 +112,13 @@ public class TaskController {
     
 	@ApiOperation(value = "Delete a task")
     @CrossOrigin(origins = "*")
-   	@DeleteMapping(path="/delete", produces = "application/json; charset=UTF-8") 
-   	public ResponseEntity<?> deleteTask (@RequestBody Task task) {
+        @DeleteMapping(path="/delete", produces = "application/json; charset=UTF-8")
+        public ResponseEntity<?> deleteTask (@RequestBody TaskDto taskDto) {
 
 		try {
-   			taskService.delete(task);
-		    logger.info("TaskController - deleteTask: " + task);
+                        Task task = taskMapper.toEntity(taskDto);
+                        taskService.delete(task);
+                    logger.info("TaskController - deleteTask: " + task);
     		return new ResponseEntity<>(HttpStatus.OK); 
    		} catch (Exception e) {
 		    logger.error("TaskController - deleteTask: " + e);
@@ -115,12 +130,13 @@ public class TaskController {
 	@ApiOperation(value = "Fetch a task by code")
     @CrossOrigin(origins = "*")
    	@GetMapping(path="/code/{code}", produces = "application/json; charset=UTF-8") 
-   	public ResponseEntity<?> getTaskByCode (@PathVariable(name = "code") int code) {
+        public ResponseEntity<?> getTaskByCode (@PathVariable(name = "code") int code) {
 
 		try {
-			Optional<Task> tempTask = taskService.getTaskByCode(code);
-		    logger.info("TaskController - getTaskByCode: " + code);
-    		return new ResponseEntity<>(tempTask, HttpStatus.OK); 
+                        Optional<Task> tempTask = taskService.getTaskByCode(code);
+                        Optional<TaskDto> dto = tempTask.map(taskMapper::toDto);
+                    logger.info("TaskController - getTaskByCode: " + code);
+                return new ResponseEntity<>(dto, HttpStatus.OK);
    		} catch (Exception e) {
 		    logger.error("TaskController - getTaskByCode: " + code);
     		return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
