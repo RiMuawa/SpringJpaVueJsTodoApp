@@ -11,9 +11,8 @@ import org.springframework.stereotype.Component;
 import com.fatcatdog.todo.model.Task;
 import com.fatcatdog.todo.service.TaskService;
 
-//This class inputs 3 objects into the database upon booting up the application. 
-//I set spring.jpa.hibernate.ddl-auto=create-drop in Application.properties, so the 
-//database is dropped every time the application is stopped/started. 
+//This class inputs a couple of demo records into the database when the
+//application starts. The schema is created via schema.sql.
 
 @Component
 public class DataLoader implements ApplicationRunner {

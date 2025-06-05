@@ -2,52 +2,36 @@ package com.fatcatdog.todo.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-//Entity is used by Spring JPA to generate a table for Task in DB
-
-@Entity
-@Table(name = "task")
+//Simple POJO used as model for tasks
 public class Task {
 	
     @JsonProperty
-	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
     @NotNull
-	private Integer id;
+    private Integer id;
 	
     @JsonProperty
     @NotNull
-    @Column(name = "name")
-	private String name;
+    private String name;
 	
     @JsonProperty
     @NotNull
-    @Column(name = "description")
-	private String description; 
+    private String description;
 	
     @JsonProperty
     @NotNull
-    @Column(name = "due_date")
-	private Date dueDate;
+    private Date dueDate;
     
     @JsonProperty
     @NotNull
-    @Column(name = "code", unique=true)
-	private int code;
+    private int code;
 
     @JsonProperty
     @NotNull
-    @Column(name = "status")
-	private boolean status;
+    private boolean status;
 
     
 	public Task(Integer id, String name, String description, Date dueDate, int code, boolean status) {

@@ -8,57 +8,59 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fatcatdog.todo.model.Task;
-import com.fatcatdog.todo.repository.TaskRepository;
+import java.util.List;
+
+import com.fatcatdog.todo.mapper.TaskMapper;
 
 //@Service  brings in appropriate beans
-//This class brings in an instance of our TaskRepository to add more abstraction user from DB
+//This class interacts with the database through TaskMapper
 @Service
 public class TaskService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
-	@Autowired
-	private TaskRepository taskRepository;
+    @Autowired
+    private TaskMapper taskMapper;
 	
 
-	public TaskService(TaskRepository taskRepository) {
-	    this.taskRepository = taskRepository;
-	}
+    public TaskService(TaskMapper taskMapper) {
+        this.taskMapper = taskMapper;
+    }
 
-	public Iterable<Task> getAllTasks(){
+    public List<Task> getAllTasks(){
 
 	    logger.info("TaskService getAllTasks");
-		return taskRepository.findAll();
+        return taskMapper.findAll();
 	}
 	
 	public void save(Task task) {
 
 	    logger.info("TaskService save");
 	    logger.info("Task: " + task);
-		taskRepository.save(task);
+        taskMapper.save(task);
 	}
 	
 	public void delete(Task task) {
 		logger.info("TaskService delete");
 	    logger.info("Task: " + task);
-		taskRepository.delete(task);
+        taskMapper.delete(task);
 	}
 	
 	public Optional<Task> getTask(int id) {
 		logger.info("TaskService getTask");
 	    logger.info("Task id: " + id);
-	    return taskRepository.findById(id);
+        return taskMapper.findById(id);
 	}
 
 	public Optional<Task> getTaskByCode(int code) {
 		logger.info("TaskService getTaskByCode");
 	    logger.info("Task code: " + code);
-	    return taskRepository.findByCode(code);
+        return taskMapper.findByCode(code);
 	}
 	
 	public Optional<Integer> findMaxCode() {
 		logger.info("TaskService getMaxCode");
-		Optional<Integer> number = taskRepository.findMaxCode();
+        Optional<Integer> number = taskMapper.findMaxCode();
 	    logger.info("Task number: " + number);
 	    
 		return number;
